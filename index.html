@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Ads Audit Tool</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .card-option input[type="radio"] { display: none; }
+    .card-option input[type="radio"]:checked + label { border-color: #4285F4; background: #EBF2FF; }
+    .card-option label { cursor: pointer; transition: all 0.15s; }
+    .card-option label:hover { border-color: #93B8F8; background: #F5F9FF; }
+    .progress-fill { transition: width 0.4s ease; }
+    textarea:focus, input:focus, select:focus { outline: none; border-color: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,0.1); }
+    @media print {
+      .no-print { display: none !important; }
+      .report-section { break-inside: avoid; }
+      body { background: white; }
+    }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .tag { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Header -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+  <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#4285F4"/>
+        <text x="5" y="20" font-size="16" fill="white" font-weight="700">G</text>
+      </svg>
+      <span class="font-700 text-gray-900 text-lg font-bold">Ads Audit</span>
+    </div>
+    <span id="step-label" class="text-sm text-gray-500 font-medium"></span>
+  </div>
+</header>
+
+<!-- Progress Bar -->
+<div class="bg-white border-b border-gray-200 no-print" id="progress-bar-wrap">
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="h-1 bg-gray-100 rounded-full my-0">
+      <div class="h-1 bg-blue-500 rounded-full progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="max-w-3xl mx-auto px-6 py-10">
+
+  <!-- ===== STEP 1: Basics ===== -->
+  <div class="step-panel active fade-in" id="step-1">
+    <div class="mb-8">
+      <p class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">Step 1 of 5</p>
+      <h1 class="text-3xl font-bold text-gray-900">The Basics</h1>
+      <p class="text-gray-500 mt-2">Let's start with some quick fundamentals about your business.</p>
+    </div>
+
+    <div class="space-y-6">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Website URL <span class="text-red-400">*</span></label>
+        <input type="url" id="website-url" placeholder="https://yourstore.com"
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-900 text-sm transition-all" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">Monthly Google Ads Spend <span class="text-red-400">*</span></label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="spend-options">
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-1" value="500" data-label="$0 – $1k/mo" />
+            <label for="spend-1" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$0 – $1k</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-2" value="3000" data-label="$1k – $5k/mo" />
+            <label for="spend-2" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$1k – $5k</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-3" value="7500" data-label="$5k – $10k/mo" />
+            <label for="spend-3" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$5k – $10k</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-4" value="30000" data-label="$10k – $50k/mo" />
+            <label for="spend-4" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$10k – $50k</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-5" value="75000" data-label="$50k – $100k/mo" />
+            <label for="spend-5" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$50k – $100k</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-6" value="175000" data-label="$100k – $250k/mo" />
+            <label for="spend-6" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$100k – $250k</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="monthly-spend" id="spend-7" value="300000" data-label="$250k+/mo" />
+            <label for="spend-7" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-xl font-bold text-gray-800">$250k+</div>
+              <div class="text-xs text-gray-500 mt-1">per month</div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-end">
+      <button onclick="nextStep(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+        Continue →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: Business Overview ===== -->
+  <div class="step-panel fade-in" id="step-2">
+    <div class="mb-8">
+      <p class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">Step 2 of 5</p>
+      <h1 class="text-3xl font-bold text-gray-900">Business Overview</h1>
+      <p class="text-gray-500 mt-2">Tell us about what you sell and your economics.</p>
+    </div>
+
+    <div class="space-y-6">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">What exactly are you selling? <span class="text-red-400">*</span></label>
+        <p class="text-xs text-gray-400 mb-2">Describe your niche, industry, and product type in detail.</p>
+        <textarea id="business-niche" rows="4" placeholder="E.g. We sell handmade leather wallets for men. Our main products are minimalist bifold wallets and card holders. We're in the premium accessories space..."
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none transition-all"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Average Order Value (AOV) <span class="text-red-400">*</span></label>
+        <select id="aov" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 bg-white transition-all">
+          <option value="">Select your AOV...</option>
+          <option value="under25">Under $25</option>
+          <option value="25-75">$25 – $75</option>
+          <option value="76-150">$76 – $150</option>
+          <option value="151-500">$151 – $500</option>
+          <option value="500plus">$500+</option>
+          <option value="unknown">Don't know</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-between">
+      <button onclick="prevStep(2)" class="text-gray-500 hover:text-gray-700 font-medium px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-all">
+        ← Back
+      </button>
+      <button onclick="nextStep(2)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+        Continue →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: Catalog & Markets ===== -->
+  <div class="step-panel fade-in" id="step-3">
+    <div class="mb-8">
+      <p class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">Step 3 of 5</p>
+      <h1 class="text-3xl font-bold text-gray-900">Catalog &amp; Markets</h1>
+      <p class="text-gray-500 mt-2">Tell us about your products and where you sell.</p>
+    </div>
+
+    <div class="space-y-6">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Total number of products <span class="text-red-400">*</span></label>
+        <select id="product-count" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 bg-white transition-all">
+          <option value="">Select range...</option>
+          <option value="5">1 – 10 products</option>
+          <option value="30">11 – 50 products</option>
+          <option value="125">51 – 200 products</option>
+          <option value="500">201 – 1,000 products</option>
+          <option value="1500">1,001+ products</option>
+          <option value="null">Not sure</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">How unique are your products? <span class="text-red-400">*</span></label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="card-option">
+            <input type="radio" name="uniqueness" id="unique-high" value="highly_unique" />
+            <label for="unique-high" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-2xl mb-1">🎯</div>
+              <div class="text-sm font-semibold text-gray-800">Highly unique / niche</div>
+              <div class="text-xs text-gray-400 mt-1">Few or no direct competitors</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="uniqueness" id="unique-generic" value="generic" />
+            <label for="unique-generic" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-2xl mb-1">🏪</div>
+              <div class="text-sm font-semibold text-gray-800">Generic / competitive</div>
+              <div class="text-xs text-gray-400 mt-1">Many similar products available</div>
+            </label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="uniqueness" id="unique-unknown" value="unknown" />
+            <label for="unique-unknown" class="block border-2 border-gray-200 rounded-xl p-4 text-center">
+              <div class="text-2xl mb-1">🤷</div>
+              <div class="text-sm font-semibold text-gray-800">Don't know</div>
+              <div class="text-xs text-gray-400 mt-1">Not sure how to classify</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Catalog &amp; Markets overview <span class="text-red-400">*</span></label>
+        <p class="text-xs text-gray-400 mb-2">Cover whatever is relevant: number of variants, hero/bestseller products, which countries you advertise in, product categories, anything else about your catalog.</p>
+        <textarea id="catalog-overview" rows="7" placeholder="E.g. Our hero products are 3 bifold wallet styles which drive ~80% of revenue. Most products have 3–5 colour variants. We sell mainly in the US and Australia. We have a few seasonal products that we only run in Q4..."
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none transition-all"></textarea>
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-between">
+      <button onclick="prevStep(3)" class="text-gray-500 hover:text-gray-700 font-medium px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-all">
+        ← Back
+      </button>
+      <button onclick="nextStep(3)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+        Continue →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 4: Google Ads Setup ===== -->
+  <div class="step-panel fade-in" id="step-4">
+    <div class="mb-8">
+      <p class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">Step 4 of 5</p>
+      <h1 class="text-3xl font-bold text-gray-900">Google Ads Setup</h1>
+      <p class="text-gray-500 mt-2">Describe your current Google Ads structure as thoroughly as you can. Use "Don't know" wherever needed.</p>
+    </div>
+
+    <div class="space-y-6">
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Do you currently run a Brand Search campaign? <span class="text-red-400">*</span></label>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="card-option">
+            <input type="radio" name="brand-search" id="brand-yes" value="yes" />
+            <label for="brand-yes" class="block border-2 border-gray-200 rounded-xl p-3 text-center text-sm font-semibold text-gray-700">Yes</label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="brand-search" id="brand-no" value="no" />
+            <label for="brand-no" class="block border-2 border-gray-200 rounded-xl p-3 text-center text-sm font-semibold text-gray-700">No</label>
+          </div>
+          <div class="card-option">
+            <input type="radio" name="brand-search" id="brand-unknown" value="unknown" />
+            <label for="brand-unknown" class="block border-2 border-gray-200 rounded-xl p-3 text-center text-sm font-semibold text-gray-700">Don't know</label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Describe your current Google Ads setup <span class="text-red-400">*</span></label>
+        <p class="text-xs text-gray-400 mb-2">Include whatever is relevant: Search campaigns (how many, what they target, spend), Shopping campaigns, Performance Max campaigns, bidding strategies, segmentation. Use "Don't know" wherever needed.</p>
+        <textarea id="ads-overview" rows="8" placeholder="E.g. We run 1 PMax campaign targeting all products (~$4k/mo, Maximize Conversion Value). 1 non-brand Search campaign on BOFU keywords (~$2k/mo, phrase + exact match). No Standard Shopping. Bidding is smart. No segmentation yet. Don't know the exact impression share..."
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none transition-all"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">How is your feed imported into Merchant Center?</label>
+        <textarea id="feed-setup" rows="3" placeholder="E.g. Native Shopify Google & YouTube app / Multifeed / Google Sheets / API / Don't know"
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none transition-all"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">How is tracking set up?</label>
+        <textarea id="tracking-setup" rows="3" placeholder="E.g. GA4 + Google Ads tag via GTM. Purchase event fires on order confirmation page. Don't know..."
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none transition-all"></textarea>
+      </div>
+
+      <div class="pt-2 border-t border-gray-200">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">What are you currently trying to solve? <span class="text-gray-400 font-normal">(optional)</span></label>
+        <p class="text-xs text-gray-400 mb-2">Are you trying to scale spend, improve ROAS, find the next growth lever, break through a plateau? The more specific, the better — this will be reflected in your audit.</p>
+        <textarea id="goals-challenges" rows="4" placeholder="E.g. We've been stuck at around $30k/mo for the past 2 months. ROAS is around 3x but we want to push it to 4x before scaling. Not sure whether the issue is the feed, the campaign structure, or something else..."
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none transition-all"></textarea>
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-between">
+      <button onclick="prevStep(4)" class="text-gray-500 hover:text-gray-700 font-medium px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-all">
+        ← Back
+      </button>
+      <button onclick="nextStep(4)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+        Continue →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 5: Contact ===== -->
+  <div class="step-panel fade-in" id="step-5">
+    <div class="mb-8">
+      <p class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">Step 5 of 5</p>
+      <h1 class="text-3xl font-bold text-gray-900">Almost there!</h1>
+      <p class="text-gray-500 mt-2">Leave your details and we'll generate your personalised audit.</p>
+    </div>
+
+    <div class="space-y-5">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name <span class="text-red-400">*</span></label>
+        <input type="text" id="contact-name" placeholder="Jane Smith"
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address <span class="text-red-400">*</span></label>
+        <input type="email" id="contact-email" placeholder="jane@yourstore.com"
+          class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 transition-all" />
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-between">
+      <button onclick="prevStep(5)" class="text-gray-500 hover:text-gray-700 font-medium px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-all">
+        ← Back
+      </button>
+      <button onclick="generateReport()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+        Generate My Audit ✦
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="step-panel fade-in" id="step-results">
+
+    <!-- Top bar -->
+    <div class="no-print flex items-center justify-between mb-8">
+      <div>
+        <p class="text-green-600 text-sm font-semibold uppercase tracking-wide mb-1">✓ Audit Complete</p>
+        <h1 class="text-3xl font-bold text-gray-900">Your Google Ads Audit</h1>
+      </div>
+      <button onclick="window.print()" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-5 py-2.5 rounded-xl text-sm transition-colors">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / Save PDF
+      </button>
+    </div>
+
+    <!-- Category badge + overview -->
+    <div class="bg-blue-600 text-white rounded-2xl p-6 mb-6 report-section">
+      <div>
+        <div id="report-category-title" class="text-2xl font-bold mb-1"></div>
+        <div id="report-category-desc" class="text-blue-100 text-sm"></div>
+      </div>
+      <div class="mt-5 pt-5 border-t border-blue-500 grid grid-cols-3 gap-4 text-center text-sm">
+        <div><div class="text-blue-200 text-xs uppercase tracking-wide mb-1">Monthly Spend</div><div id="report-spend" class="font-bold"></div></div>
+        <div><div class="text-blue-200 text-xs uppercase tracking-wide mb-1">Products</div><div id="report-products" class="font-bold"></div></div>
+        <div><div class="text-blue-200 text-xs uppercase tracking-wide mb-1">Website</div><div id="report-url" class="font-bold text-xs truncate"></div></div>
+      </div>
+    </div>
+
+    <!-- Sections -->
+    <div id="report-body" class="space-y-6"></div>
+
+    <!-- Footer -->
+    <div class="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-400 no-print">
+      <p>This audit was generated based on the information you provided. Results may vary based on your specific market conditions.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Error toast -->
+<div id="error-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-red-500 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50 max-w-sm text-center"></div>
+
+<script>
+// ========== STATE ==========
+let currentStep = 1;
+const totalSteps = 5;
+
+function getField(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function getRadio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+function showError(msg) {
+  const toast = document.getElementById('error-toast');
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 3500);
+}
+
+// ========== NAVIGATION ==========
+function updateProgress(step) {
+  const pct = step <= totalSteps ? ((step - 1) / totalSteps) * 100 : 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  const labels = ['', 'Basics', 'Business Overview', 'Catalog & Markets', 'Google Ads Setup', 'Your Details'];
+  document.getElementById('step-label').textContent = step <= totalSteps ? `Step ${step} of ${totalSteps}: ${labels[step]}` : '';
+}
+
+function showStep(n, isResults) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  const target = isResults ? document.getElementById('step-results') : document.getElementById(`step-${n}`);
+  if (target) {
+    target.classList.add('active', 'fade-in');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  const progressWrap = document.getElementById('progress-bar-wrap');
+  if (isResults) {
+    progressWrap.style.display = 'none';
+    document.getElementById('progress-fill').style.width = '100%';
+    document.getElementById('step-label').textContent = '';
+  } else {
+    progressWrap.style.display = 'block';
+    updateProgress(n);
+  }
+}
+
+function nextStep(from) {
+  if (!validateStep(from)) return;
+  currentStep = from + 1;
+  showStep(currentStep, false);
+}
+
+function prevStep(from) {
+  currentStep = from - 1;
+  showStep(currentStep, false);
+}
+
+// ========== VALIDATION ==========
+function validateStep(step) {
+  if (step === 1) {
+    const url = getField('website-url');
+    if (!url) { showError('Please enter your website URL.'); return false; }
+    if (!getRadio('monthly-spend')) { showError('Please select your monthly Google Ads spend.'); return false; }
+  }
+  if (step === 2) {
+    if (!getField('business-niche')) { showError('Please describe what you\'re selling.'); return false; }
+    if (!getField('aov')) { showError('Please select your average order value.'); return false; }
+  }
+  if (step === 3) {
+    if (!getField('product-count')) { showError('Please select your product count.'); return false; }
+    if (!getRadio('uniqueness')) { showError('Please select how unique your products are.'); return false; }
+    if (!getField('catalog-overview')) { showError('Please fill in the Catalog & Markets overview.'); return false; }
+  }
+  if (step === 4) {
+    if (!getRadio('brand-search')) { showError('Please indicate whether you run a Brand Search campaign.'); return false; }
+    if (!getField('ads-overview')) { showError('Please describe your current Google Ads setup.'); return false; }
+  }
+  if (step === 5) {
+    if (!getField('contact-name')) { showError('Please enter your name.'); return false; }
+    const email = getField('contact-email');
+    if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return false; }
+  }
+  return true;
+}
+
+// ========== CATEGORIZATION ==========
+function getCategory(spendValue, productCountValue) {
+  const spend = parseFloat(spendValue);
+  const products = productCountValue === 'null' ? null : parseFloat(productCountValue);
+  if (products === null) return 'unknown_products';
+  const isLowSpend = spend < 10000;
+  const isFewProducts = products < 20;
+  if (isFewProducts && isLowSpend) return 'A';
+  if (isFewProducts && !isLowSpend) return 'B';
+  if (!isFewProducts && isLowSpend) return 'C';
+  return 'D';
+}
+
+// ========== REPORT GENERATION ==========
+function generateReport() {
+  if (!validateStep(5)) return;
+
+  // Collect all data
+  const data = {
+    url: getField('website-url'),
+    spendValue: parseFloat(getRadio('monthly-spend') || 0),
+    spendLabel: (document.querySelector('input[name="monthly-spend"]:checked') || {}).getAttribute('data-label') || '',
+    niche: getField('business-niche'),
+    aov: getField('aov'),
+    productCount: getField('product-count'),
+    uniqueness: getRadio('uniqueness'),
+    catalogOverview: getField('catalog-overview'),
+    hasBrandSearch: getRadio('brand-search'),
+    adsOverview: getField('ads-overview'),
+    feedSetup: getField('feed-setup'),
+    trackingSetup: getField('tracking-setup'),
+    goalsChallenges: getField('goals-challenges'),
+    name: getField('contact-name'),
+    email: getField('contact-email'),
+  };
+
+  const category = getCategory(data.spendValue, data.productCount);
+  data.category = category;
+
+  // Populate overview card
+  const catInfo = getCategoryInfo(category);
+  document.getElementById('report-category-title').textContent = catInfo.title;
+  document.getElementById('report-category-desc').textContent = catInfo.desc;
+  document.getElementById('report-spend').textContent = data.spendLabel || 'N/A';
+  document.getElementById('report-products').textContent = getProductLabel(data.productCount);
+  document.getElementById('report-url').textContent = data.url;
+
+  // Build report sections
+  const sections = [
+    buildCoreStrategy(data, category),
+    buildAdsStructure(data, category),
+    buildBrandTerms(data),
+    buildRampUpPlan(data, category),
+    buildClosingSection(data, category),
+  ];
+
+  document.getElementById('report-body').innerHTML = sections.join('');
+
+  showStep(null, true);
+}
+
+function getCategoryInfo(cat) {
+  const map = {
+    A: { title: 'Your Audit', desc: 'Your core strategy should focus on maximizing returns from your limited product catalog with clear targeting on the most important keywords.' },
+    B: { title: 'Your Audit', desc: 'Your core strategy should focus on dominating high-intent search terms before expanding into broader keyword layers.' },
+    C: { title: 'Your Audit', desc: 'Your core strategy should use your wide catalog as your main advantage — keep things simple, improve your feed, and scale from there.' },
+    D: { title: 'Your Audit', desc: 'Your core strategy should focus on auditing where growth has stalled and restructuring your campaigns around proven product performance.' },
+    unknown_products: { title: 'Your Audit', desc: 'Some recommendations are provisional because product count was not confirmed. Confirm your product count for a more precise strategy.' },
+  };
+  return map[cat] || map.unknown_products;
+}
+
+function getProductLabel(val) {
+  const map = { '5': '1–10 products', '30': '11–50 products', '125': '51–200 products', '500': '201–1,000 products', '1500': '1,001+ products', 'null': 'Not sure' };
+  return map[val] || val;
+}
+
+// ========== SECTION BUILDERS ==========
+
+function section(icon, title, colorClass, content) {
+  return `
+  <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden report-section">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3 ${colorClass}">
+      <span class="text-xl">${icon}</span>
+      <h2 class="font-bold text-gray-900 text-lg">${title}</h2>
+    </div>
+    <div class="px-6 py-5 space-y-4 text-sm text-gray-700 leading-relaxed">
+      ${content}
+    </div>
+  </div>`;
+}
+
+function h3(text) { return `<h3 class="font-semibold text-gray-900 mt-4 mb-2 text-base">${text}</h3>`; }
+function bullet(items) { return `<ul class="space-y-2">${items.map(i => `<li class="flex gap-2"><span class="text-blue-500 mt-0.5 shrink-0">→</span><span>${i}</span></li>`).join('')}</ul>`; }
+function warning(text) { return `<div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-amber-800 text-sm flex gap-2"><span>⚠️</span><span>${text}</span></div>`; }
+function info(text) { return `<div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-800 text-sm flex gap-2"><span>ℹ️</span><span>${text}</span></div>`; }
+function success(text) { return `<div class="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-green-800 text-sm flex gap-2"><span>✅</span><span>${text}</span></div>`; }
+
+function weekBlock(week, title, items) {
+  return `
+  <div class="border border-gray-200 rounded-xl overflow-hidden">
+    <div class="bg-gray-50 px-4 py-2 flex items-center gap-3 border-b border-gray-200">
+      <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Topic ${week}</span>
+      <span class="font-semibold text-gray-800 text-sm">${title}</span>
+    </div>
+    <ul class="px-4 py-3 space-y-2">
+      ${items.map(i => `<li class="flex gap-2 text-sm text-gray-700"><span class="text-gray-400 shrink-0 mt-0.5">☐</span><span>${i}</span></li>`).join('')}
+    </ul>
+  </div>`;
+}
+
+// ========== CORE STRATEGY ==========
+function buildCoreStrategy(data, cat) {
+  let content = '';
+
+  if (cat === 'A') {
+    const goalText = (data.goalsChallenges || '').toLowerCase();
+    const goalWantsScale = /scale|grow|plateau|stall|stuck|more spend|higher spend|more volume|can.t scale|cannot scale/.test(goalText);
+    const goalHasRoasIssue = /low roas|poor roas|bad roas|weak roas|roas.{0,15}(low|poor|bad|not great|not good)|not good enough|below target|too low|can.t hit|cannot hit|not hit|struggl|improve.{0,15}roas|increase.{0,15}roas|better roas|need.{0,20}better roas|not (hitting|reaching)|margin.{0,10}(low|tight|thin)|not profitable|unprofitable/.test(goalText);
+    const goalHasGoodResults = /working well|good results?|great results?|happy|pleased|performing well|doing well|going well/.test(goalText);
+    const hasGoalsA = data.goalsChallenges && data.goalsChallenges.length > 10;
+
+    content = `
+      ${h3('Think of your Google keyword targeting as a funnel')}
+      <p>At your current spend level, <strong>100% of your focus needs to be on Bottom-of-Funnel (BOFU)</strong>. This means targeting people who are searching for exactly what you sell — your specific product type, material, style, or use case.</p>
+      ${bullet([
+        '<strong>BOFU first:</strong> Target people searching for literally what you sell. These are your highest-intent, highest-converting queries.',
+        '<strong>MOFU later:</strong> Once BOFU is profitable and scaling, expand to "almost what you sell" — the category or problem your product solves.',
+        '<strong>TOFU last:</strong> Awareness-level keywords only once you\'ve saturated BOFU and MOFU.',
+      ])}
+      <div class="bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 mt-2 space-y-2">
+        <p class="font-semibold text-gray-800 text-sm">What does BOFU / MOFU / TOFU actually mean?</p>
+        <p class="text-sm text-gray-600">When we say <strong>BOFU</strong>, we mean keywords for exactly the product you sell. When we say <strong>MOFU</strong>, we mean the type or category of product you sell — people who are looking for something similar but haven't decided on your exact product yet. And <strong>TOFU</strong> means people searching for a solution to a problem your product solves, without knowing what product they want.</p>
+        <p class="text-sm text-gray-600">A clear example: take <em>NAD Patches</em>, which are trending right now. <strong>BOFU</strong> would be "NAD Patches" — they want exactly that product. <strong>MOFU</strong> would be "NAD Supplements" — they want a NAD supplement but could equally buy a pill or powder instead. <strong>TOFU</strong> would be "supplements to improve cognitive function" — your product could be the answer, but so could dozens of other things.</p>
+      </div>
+      ${h3('The key lever at this stage: testing titles')}
+      <p>Your product titles in the feed are what signal to Google which searches to show your ads for. The most important thing you can do right now is <strong>create different sets of titles that each match a different way someone might search for what you sell</strong>. These title experiments will tell you which keyword angles actually convert — and that data guides everything that comes next.</p>
+      ${h3('Short-Term Focus (Now)')}
+      ${bullet([
+        'Create <strong>5–10 different title variants</strong> for your hero products — each targeting a slightly different BOFU keyword angle.',
+        'Launch Shopping ads inside a <strong>PMax campaign</strong> containing your hero products only. PMax is the right campaign type for this stage — it gives you Smart Bidding without manual setup.',
+        'Prove the BOFU thesis — let the titles run and find out which keywords actually convert.',
+        'Reach a stable, acceptable ROAS before touching anything else.',
+      ])}
+      ${h3('Long-Term Direction')}
+      ${bullet([
+        'Once Shopping is profitable: layer in a BOFU Search campaign on your top-converting queries.',
+        'Once Search is stable: start planning MOFU title variants for Shopping.',
+        'Scale horizontally through the funnel — do not skip stages.',
+      ])}
+      ${info('With a smaller budget, every dollar counts. Resist the urge to spread across multiple campaigns or funnel stages too early. Win BOFU cleanly first.')}
+      ${hasGoalsA ? (() => {
+        const alreadyTitleTesting = /sheet|title variant|title test|multiple title/.test((data.feedSetup + ' ' + data.adsOverview + ' ' + data.catalogOverview).toLowerCase());
+        return `${h3('On Your Specific Goals')}
+        <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-800 text-sm space-y-3">
+          <p class="font-semibold">You mentioned: <span class="italic font-normal">"${data.goalsChallenges}"</span></p>
+          ${goalHasRoasIssue ? `
+            ${!alreadyTitleTesting ? `<p><strong>First: are you actually doing title testing?</strong> If you're running products from an automatic feed (Shopify sync or similar), you have almost no control over what keywords you show up for. The first step is to move to a Google Sheets feed and start creating different title variants for your hero products — each one targeting a different BOFU keyword angle. This is the single biggest lever you have at this stage.</p>` : ''}
+            <p><strong>${alreadyTitleTesting ? 'Since you are already doing title testing, the next thing to look at is' : 'Once you have title testing running:'} a deep review of your search terms report.</strong> A very common problem with title testing is that the titles start triggering bad or irrelevant search terms. You need to check your search terms report every single day and add negatives for anything that is clearly off-target. If your spend is going to the wrong queries, no amount of bidding optimisation will fix your ROAS.</p>
+            <p><strong>Check for keywords that are too generic.</strong> Sometimes the problem isn't irrelevant terms — it's terms that are too "top of funnel," meaning not high-intent enough. For example, if you sell sterling silver earrings, you want spend going to "sterling silver earrings," not "womens jewelry." "Womens jewelry" isn't irrelevant, but it's too generic to be worth the spend while you're struggling to hit your ROAS target. Look for broader terms like this in your search term report and consider excluding or limiting them until results improve.</p>` : ''}
+          ${goalHasGoodResults && !goalWantsScale ? `<p><strong>Keep doing what you're doing.</strong> If results are good, do not add complexity. One thing worth exploring when you're ready: title testing. Creating slightly different title variants for your hero products lets you target a wider range of BOFU keywords without launching new campaigns — and it gives you data on which angles convert best.</p>` : ''}
+          ${goalWantsScale ? `<p><strong>Look into where you are in the BOFU → MOFU → TOFU funnel.</strong> If you're stuck on scaling, the most likely reason is that you've saturated BOFU — you're already showing up for everyone searching for exactly what you sell. The next step is to force MOFU: create new title variants that target the category or problem your product solves (not just the product itself), and make sure those titles actually pull new, broader queries in your search terms report. Once MOFU is getting relevant traffic, add a dedicated Search campaign for those MOFU keywords too.</p>
+            ${goalHasGoodResults ? `<p><strong>Consider activating more generic keywords.</strong> Since results are already good and the goal is to scale, the next step is to push into MOFU — slightly more generic keywords than your current BOFU targeting. Going slightly broader can unlock additional volume that your current high-intent keywords can't reach.</p>` : ''}
+            ${!goalHasRoasIssue && !goalHasGoodResults ? `<p><strong>Before scaling further, get clarity on your current results.</strong> To scale successfully, you first need a profitable BOFU — and it wasn't fully clear from what you described whether that's currently the case. If your results are a bit underwhelming right now, start by reviewing your search term report — you might be wasting budget on terms that are too broad or irrelevant for your current BOFU focus. If your results are already solid and you're simply struggling to scale, then push into MOFU — activating slightly more generic keywords can unlock additional volume that your current BOFU keywords can't reach.</p>` : ''}` : ''}
+          ${!goalHasRoasIssue && !goalHasGoodResults && !goalWantsScale ? `<p>Focus on getting one thing right first: BOFU title testing. Get one lean PMax campaign running with 5–10 title variants, let it accumulate data, and review the search terms report daily. Everything else comes after that.</p>` : ''}
+        </div>`;
+      })() : ''}`;
+  }
+
+  else if (cat === 'B') {
+    const goalText = (data.goalsChallenges || '').toLowerCase();
+    const goalWantsScale = /scale|grow|plateau|stall|stuck|more spend|higher spend|more volume|can.t scale|cannot scale/.test(goalText);
+    const goalHasRoasIssue = /low roas|poor roas|bad roas|weak roas|roas.{0,15}(low|poor|bad|not great|not good)|not good enough|below target|too low|can.t hit|cannot hit|not hit|struggl|improve.{0,15}roas|increase.{0,15}roas|better roas|need.{0,20}better roas|not (hitting|reaching)|margin.{0,10}(low|tight|thin)|not profitable|unprofitable/.test(goalText);
+    const goalHasGoodResults = /working well|good results?|great results?|happy|pleased|performing well|doing well|going well/.test(goalText);
+    const hasGoalsB = data.goalsChallenges && data.goalsChallenges.length > 10;
+
+    content = `
+      ${h3('Your Priority Order: BOFU → MOFU → TOFU')}
+      <p>At your spend level, the first thing to establish is <strong>whether you are already dominating BOFU</strong>. Do not assume you need to expand — first audit how well you own the bottom of the funnel.</p>
+      ${h3('BOFU Saturation Check (Do This First)')}
+      ${bullet([
+        'Check your <strong>keyword impression share</strong> on your most important BOFU terms.',
+        'Do <strong>live test searches</strong> in your target market — are you always position #1? Do you appear consistently?',
+        'Review Search term reports — are you capturing the queries you expect?',
+      ])}
+      ${h3('If BOFU Can Still Scale')}
+      ${bullet([
+        'Keep scaling BOFU — it has the highest ROI of any funnel layer.',
+        'Add better title variants targeting different BOFU keyword angles.',
+        'Improve hero product USPs in ad copy and Shopping titles.',
+        'Do NOT move to MOFU yet.',
+      ])}
+      ${h3('If BOFU Is Close to Saturated')}
+      ${bullet([
+        'Expand into MOFU next (not TOFU — that comes after MOFU is proven).',
+        'Create new MOFU-focused title variants in Shopping first.',
+        'Add or expand a dedicated MOFU Search campaign.',
+        'Validate that MOFU titles actually pull MOFU queries before scaling hard.',
+      ])}
+      ${warning('If you already run Search + Shopping + PMax, do not treat this as a rebuild. The task is to identify the next decision point — not to question everything at once.')}
+      ${hasGoalsB ? (() => {
+        const alreadyTitleTesting = /sheet|title variant|title test|multiple title/.test((data.feedSetup + ' ' + data.adsOverview + ' ' + data.catalogOverview).toLowerCase());
+        return `${h3('On Your Specific Goals')}
+        <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-800 text-sm space-y-3">
+          <p class="font-semibold">You mentioned: <span class="italic font-normal">"${data.goalsChallenges}"</span></p>
+          ${goalHasRoasIssue ? `
+            ${!alreadyTitleTesting ? `<p><strong>First: are you actually doing title testing?</strong> At this spend level, if you're still running products from an automatic feed with no title variants, that is almost certainly the root cause. Move to a Google Sheets feed and start creating BOFU-focused title variants for your hero products. This is non-negotiable before anything else.</p>` : ''}
+            <p><strong>${alreadyTitleTesting ? 'Since you are title testing, dig into' : 'Once title testing is running, the next thing to check is'} your search terms report — every day.</strong> Title testing at this spend level often causes titles to drift and start pulling irrelevant queries. If your spend is going to bad search terms, that will kill your ROAS regardless of structure. Add negatives aggressively.</p>
+            <p><strong>Then look at your campaign structure.</strong> A key thing to check: how many campaigns have the same Item IDs active inside them? If the same products are live in multiple campaigns simultaneously, they will compete against each other internally — which drives up your own costs and drags ROAS down. Audit for overlap first.</p>
+            <p>If there's no internal competition, the issue might be with the titles themselves: are they too long? Overly long titles often cause poor targeting. Or do you have too many title variants relative to your spend? Splitting data across too many items starves each one of enough signal to optimise properly. Consider consolidating into fewer, cleaner titles.</p>
+            <p><strong>Check for keywords that are too generic.</strong> Sometimes the problem isn't irrelevant terms — it's terms that are too "top of funnel," meaning not high-intent enough. For example, if you sell sterling silver earrings, you want spend going to "sterling silver earrings," not "womens jewelry." "Womens jewelry" isn't irrelevant, but it's too generic to be worth the spend while you're struggling to hit your ROAS target. Look for broader terms like this in your search term report and consider excluding or limiting them until results improve.</p>` : ''}
+          ${goalHasGoodResults && !goalWantsScale ? `<p><strong>Keep doing what you're doing.</strong> At this spend level with solid results, don't add complexity for the sake of it. If you're not already doing systematic title testing, that's the one thing worth exploring — it can extend the life of your current structure without requiring any campaign changes.</p>` : ''}
+          ${goalWantsScale ? `<p><strong>Work through the funnel layer by layer.</strong> The order is: BOFU titles → BOFU Search → MOFU titles → MOFU Search → TOFU titles → TOFU Search. Wherever you are in that sequence and feel stuck or missing — that's exactly where to focus next. Each new layer needs to be validated (check that the new titles actually pull the right intent queries) before you scale it. Don't skip ahead.</p>
+            <p>Also worth considering at this stage: <strong>YouTube advertising.</strong> For brands with a clear visual product and a defined audience, YouTube can open up a meaningful new traffic layer that Google Search and Shopping can't reach — and it feeds back into branded search volume over time.</p>
+            ${goalHasGoodResults ? `<p><strong>Consider activating more generic keywords.</strong> Since results are already good and the goal is to scale, the next step is to move into MOFU — slightly more generic keywords than your current BOFU targeting. Going slightly broader can unlock additional volume that your current high-intent keywords can't reach.</p>` : ''}
+            ${!goalHasRoasIssue && !goalHasGoodResults ? `<p><strong>Before scaling further, get clarity on your current results.</strong> To scale successfully, you first need a profitable BOFU — and it wasn't fully clear from what you described whether that's currently the case. If your results are a bit underwhelming right now, start by reviewing your search term report — you might be wasting budget on terms that are too broad or irrelevant for your current BOFU focus. If your results are already solid and you're simply struggling to scale, then move into MOFU — activating slightly more generic keywords can unlock additional volume that your current BOFU keywords can't reach.</p>` : ''}` : ''}
+          ${!goalHasRoasIssue && !goalHasGoodResults && !goalWantsScale ? `<p>Run the BOFU saturation check first. Where you go next depends entirely on how well you currently own the bottom of the funnel — everything else follows from that answer.</p>` : ''}
+        </div>`;
+      })() : ''}`;
+  }
+
+  else if (cat === 'C') {
+    const goalText = (data.goalsChallenges || '').toLowerCase();
+    const goalWantsScale = /scale|grow|plateau|stall|stuck|more spend|higher spend|more volume|can.t scale|cannot scale/.test(goalText);
+    const goalHasRoasIssue = /low roas|poor roas|bad roas|weak roas|roas.{0,15}(low|poor|bad|not great|not good)|not good enough|below target|too low|can.t hit|cannot hit|not hit|struggl|improve.{0,15}roas|increase.{0,15}roas|better roas|need.{0,20}better roas|not (hitting|reaching)|margin.{0,10}(low|tight|thin)|not profitable|unprofitable/.test(goalText);
+    const goalHasGoodResults = /working well|good results?|great results?|happy|pleased|performing well|doing well|going well/.test(goalText);
+    const hasGoalsC = data.goalsChallenges && data.goalsChallenges.length > 10;
+
+    content = `
+      ${h3('Core Framework: Catalog as Weapon')}
+      <p>Your large catalog is your biggest advantage. Many products means many different search intents already covered. <strong>The goal right now is not complexity — it\'s getting profitable on your catalog and scaling that until you hit a ceiling.</strong></p>
+      ${h3('Short-Term Focus (Now)')}
+      ${bullet([
+        '<strong>Keep it simple:</strong> One main campaign per market. Avoid over-segmentation at this spend level.',
+        '<strong>Feed quality is your highest-leverage action.</strong> Better titles → better queries → better ROAS.',
+        'Get to a stable, profitable ROAS on your main campaign before adding complexity.',
+      ])}
+      ${h3('Feed Priority (Do This Now)')}
+      ${bullet([
+        'Improve product titles with relevant, high-intent keywords.',
+        'Set accurate, granular product types.',
+        'Add custom labels for bestsellers, top margins, and top store revenue products.',
+        'Review and improve images on your best products.',
+      ])}
+      ${h3('Long-Term Direction')}
+      ${bullet([
+        'When spend naturally stalls or you hit $10k/mo, begin segmenting products into performance buckets.',
+        'Use custom labels (ROAS bucket, margin, store sales rank) as the basis for segmentation.',
+        'Only add Search campaigns after the main Shopping structure is stable and profitable.',
+      ])}
+      ${info('A single PMax or Standard Shopping campaign per market is a completely valid setup at this stage. Do not add complexity just for the sake of it.')}
+      ${hasGoalsC ? (() => {
+        const usesPmax = /pmax|performance max/.test((data.adsOverview).toLowerCase());
+        const usesManualBidding = /manual cpc|max clicks|manual bidding/.test((data.adsOverview).toLowerCase());
+        const marketTerms = (data.adsOverview.toLowerCase().match(/\b(us|usa|u\.s\.?|uk|eu|europe|emea|canada|australia|nz|new zealand|germany|france|spain|italy|netherlands|apac|worldwide)\b/g) || []);
+        const runsPerMarketCampaigns = new Set(marketTerms).size >= 2;
+        return `${h3('On Your Specific Goals')}
+        <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-800 text-sm space-y-3">
+          <p class="font-semibold">You mentioned: <span class="italic font-normal">"${data.goalsChallenges}"</span></p>
+          ${goalHasRoasIssue ? `
+            <p><strong>Start with the feed.</strong> For a large catalog at this spend level, poor ROAS is almost always a feed problem before it's a campaign problem. Titles too generic, product types inaccurate, or bad images all cause Google to match your ads to the wrong queries. Audit your top products first — rewrite titles with specific, high-intent keywords and make sure product types are correct.</p>
+            <p><strong>Then confirm you are running a simple structure.</strong> At under $10k/mo with many products, complexity is your enemy. If you have more than one or two campaigns, consolidate. Give the algorithm a bigger pool of data to work from.</p>
+            ${!usesPmax && usesManualBidding ? `<p><strong>Look at your bidding strategy.</strong> If you've been running Standard Shopping on Manual CPC or Max Clicks for 4+ weeks, it's worth testing PMax — it brings Smart Bidding automatically, which is better suited for a large catalog where manual bid management doesn't scale.</p>` : ''}
+            ${usesPmax ? `<p><strong>Since you're on PMax:</strong> first confirm it is actually spending on Shopping placements (check the asset group breakdown — Shopping should be driving the majority of spend). If Shopping spend is low, review your product feed approval status and make sure the feed is connected correctly. If Shopping is spending fine, look at which products are consuming most of the budget — are they your best performers, or are weaker products eating the budget? You can manually adjust which products to prioritise inside the campaign.</p>` : ''}
+            <p><strong>Check for keywords that are too generic.</strong> Sometimes the problem isn't irrelevant terms — it's terms that are too "top of funnel," meaning not high-intent enough. For example, if you sell sterling silver earrings, you want spend going to "sterling silver earrings," not "womens jewelry." "Womens jewelry" isn't irrelevant, but it's too generic to be worth the spend while you're struggling to hit your ROAS target. Look for broader terms like this in your search term report and consider excluding or limiting them until results improve.</p>` : ''}
+          ${goalHasGoodResults && !goalWantsScale ? `<p><strong>Keep doing what you're doing.</strong> The simple structure is working — let it compound. Look at every part of your setup with fresh eyes occasionally: feed quality, product types, custom labels. Small incremental improvements in the feed tend to have an outsized effect on results over time.</p>` : ''}
+          ${goalWantsScale ? `
+            <p><strong>First, check your feed.</strong> A common reason large catalogs stop scaling is that titles are too simple — they've exhausted the keywords they target. Adding more relevant keywords to your product titles can open up new search queries and unlock new volume without any campaign changes.</p>
+            <p><strong>Then consider how long you've actually been stuck.</strong> If it's been less than a week, give it time — the algorithm needs data to accumulate before it can scale efficiently. If it's been 4+ weeks with no growth despite budget being available, that's when structure becomes the conversation.</p>
+            ${runsPerMarketCampaigns ? `<p><strong>Your structure — one campaign per market — is already sound.</strong> Running a separate PMax for each market is the right approach; don't consolidate across markets, since demand and ROAS naturally differ by country. The segmentation question instead applies within each market individually: if a market's campaign has been stuck for 4+ weeks despite stable spend, consider splitting that market's catalog by performance — for example, isolating your bestsellers into their own campaign so the algorithm can push harder on proven winners without being held back by the rest of the catalog.</p>` : `
+            <p><strong>If you have 3 or more campaigns and are under $10k/mo</strong>, you're very likely over-complicating it. Consolidate into 1–2 campaigns and let the algorithm work from a larger data pool. More campaigns at low spend = less data per campaign = slower learning = harder to scale.</p>
+            <p><strong>If you have 1–2 campaigns and are still stuck</strong>, it's time to think about how to strategically split your products. The goal is to isolate your best performers so the algorithm can bid more aggressively on them without being dragged down by weaker products. Common ways to split: by <strong>category</strong> (if different categories have very different audiences or seasonality), by <strong>Google Ads ROAS</strong> (pull your top ROAS products into their own campaign with a higher tROAS target), by <strong>store sales performance</strong> (your bestsellers by revenue), or by <strong>margin</strong> (if margins vary significantly across products). Only you know which variable makes the most sense for your business — but the principle is the same: isolate the winners, push spend there.</p>`}
+            ${goalHasGoodResults ? `<p><strong>Consider activating more generic keywords.</strong> Since results are already good and the goal is to scale, the fix is often to get new keywords active — and that often means going slightly broader than what you currently target. In practice, this means adding more generic keywords into your product titles, so the algorithm connects those products to a wider range of searches on Google. Opening up to these less specific (but still relevant) search terms can unlock additional volume that your current high-intent keywords can't provide.</p>` : ''}
+            ${!goalHasRoasIssue && !goalHasGoodResults ? `<p><strong>Before scaling further, get clarity on your current results.</strong> To scale successfully, you first need profitable results — and it wasn't fully clear from what you described whether that's currently the case. If your results are a bit underwhelming right now, start by reviewing your search term report — you might be wasting budget on irrelevant or overly broad terms. If your results are already solid and you're simply struggling to scale, then consider activating more generic keywords — in practice, adding more generic keywords into your product titles so the algorithm connects those products to a wider range of searches on Google can unlock additional volume that your current high-intent keywords can't reach.</p>` : ''}` : ''}
+          ${goalHasRoasIssue ? `<p><strong>Review your search terms.</strong> Your search term report is one of the highest-leverage things to check when ROAS isn't where it should be. Even with a good feed, irrelevant search terms can sneak in and quietly eat spend. Review your search term report and exclude anything irrelevant — and keep checking it multiple times per week until everything showing up with the most impressions and clicks is highly relevant.</p>` : ''}
+          ${!goalHasRoasIssue && !goalHasGoodResults && !goalWantsScale ? `<p>Focus on feed quality first — it's the highest-leverage action at this stage. Get to a stable, profitable ROAS with a simple structure before considering anything else.</p>` : ''}
+        </div>`;
+      })() : ''}`;
+  }
+
+  else if (cat === 'D') {
+    const allText = (data.catalogOverview + ' ' + data.adsOverview + ' ' + data.goalsChallenges).toLowerCase();
+    const goalText = (data.goalsChallenges || '').toLowerCase();
+    const flagCountryGrouping = /all countr|every countr|worldwide|every market|all market|globally|all countries|international/.test(allText);
+    const flagProductMixing = /categor|all product|all ring|all necklace|all bracel|all item|entire catalog|whole catalog|all inventory|every product/.test(allText);
+    const goalWantsScale = /scale|grow|plateau|stall|stuck|more spend|higher spend|more volume|can.t scale|cannot scale/.test(goalText);
+    const goalHasRoasIssue = /low roas|poor roas|bad roas|weak roas|roas.{0,15}(low|poor|bad|not great|not good)|not good enough|below target|too low|can.t hit|cannot hit|not hit|struggl|improve.{0,15}roas|increase.{0,15}roas|better roas|need.{0,20}better roas|not (hitting|reaching)|margin.{0,10}(low|tight|thin)|not profitable|unprofitable/.test(goalText);
+    const goalHasGoodResults = /working well|good results?|great results?|happy|pleased|performing well|doing well|going well/.test(goalText);
+    const hasGoals = data.goalsChallenges && data.goalsChallenges.length > 10;
+
+    content = `
+      ${h3('Core Framework: Catalog at Scale')}
+      <p>Your large catalog is your advantage — many products cover many search intents. At this spend level, the key question is: <strong>are you scaling consistently, or have you plateaued?</strong></p>
+      ${h3('Scaling Health Check')}
+      ${bullet([
+        'How long have you been at roughly the same monthly spend and ROAS?',
+        '<strong>If plateaued for 4+ weeks AND your feed quality and tracking are solid</strong>: it\'s worth reconsidering how you are currently structuring your campaigns — not necessarily rebuilding, but questioning the assumptions behind the current setup.',
+        'If performance issues are linked to poor feed quality or tracking gaps: fix fundamentals first before touching campaign structure.',
+      ])}
+      ${flagCountryGrouping ? warning(`<strong>Worth investigating: all countries in the same campaigns.</strong> Google's Smart Bidding works from averages — the average ROAS of all active products in a campaign, across all countries. When every market is lumped together, lower-volume countries with weaker data drag down the average for the whole campaign. This limits what the algorithm can do for your strongest markets. It's worth asking: are your top 2–3 markets performing as well as they could if they had their own campaigns, with their own budgets and targets?`) : ''}
+      ${flagProductMixing ? (() => {
+        if (goalHasRoasIssue) {
+          return warning(`<strong>On your ROAS challenge — look at your feed and campaign consolidation first.</strong> When ROAS isn't where it needs to be, the instinct is often to restructure. But more often the root cause is feed quality — weak titles, poor product types, or no custom labels mean Google is matching your ads to the wrong queries. Before restructuring, audit your feed thoroughly. And if your campaigns are already split into many segments, consider whether consolidating into fewer, larger campaigns would give the algorithm more data to optimise from.`);
+        } else if (goalHasGoodResults && !goalWantsScale) {
+          return info(`<strong>Your current structure seems to be working — keep scaling it.</strong> When a broad structure (all products or all category products together) is delivering good ROAS, there's no need to add complexity. Let the algorithm keep learning from the full data pool. Only reconsider the structure if you hit a clear scaling ceiling.`);
+        } else if (goalWantsScale) {
+          return warning(`<strong>Worth investigating if you want to scale further: all products grouped in the same campaigns.</strong> Google's Smart Bidding optimises toward the average ROAS of all products in a campaign. When your best and worst performers sit together, the underperformers drag down the average — which limits how aggressively the algorithm bids on your proven winners. If you've hit a scaling ceiling with good ROAS, consider separating your top-performing products into their own campaign with a higher tROAS target. This lets you push spend on winners without the average being held back by lower performers.`);
+        } else {
+          return info(`<strong>Note on campaign product grouping:</strong> Whether keeping all products together or splitting them depends on where you are. If ROAS is solid and you want to scale: consider segmenting top performers. If ROAS needs work: focus on feed quality first. If everything is working: don't add complexity yet.`);
+        }
+      })() : ''}
+      ${h3('Feed Quality — Non-Negotiable at This Level')}
+      ${bullet([
+        'Titles must include high-intent, relevant keywords — not just product names.',
+        'Product types must be accurate and granular.',
+        'Custom labels must be thoughtfully built: ROAS performance, profit margin, store sales rank.',
+        'Images should be optimised for Shopping ads — clean, high-resolution, on-brand.',
+      ])}
+      ${warning('Feed quality is non-negotiable at this spend level. Before concluding that campaign structure is the bottleneck, make sure your feed is genuinely optimised — this is often the real constraint.')}
+      ${h3('Long-Term Direction')}
+      ${bullet([
+        'If campaigns have plateaued: reconsider how products are grouped — segment by performance bucket using custom labels.',
+        'Push budget to proven winners; reduce or pause underperformers.',
+        'Expand Search thoughtfully to capture high-intent queries outside Shopping.',
+      ])}
+      ${hasGoals ? `${h3('On Your Specific Goals')}
+      <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-800 text-sm space-y-3">
+        <div>
+          <p class="font-semibold mb-1">You mentioned:</p>
+          <p class="italic text-blue-700 mb-2">"${data.goalsChallenges}"</p>
+          <p>The recommendations in this audit are built with that context in mind. The areas most likely to move the needle on what you've described are feed quality, campaign segmentation, and country structure — in that priority order. Validate each layer before restructuring the next.</p>
+        </div>
+        ${goalHasRoasIssue ? `<p><strong>Check for keywords that are too generic.</strong> Sometimes the problem isn't irrelevant terms — it's terms that are too "top of funnel," meaning not high-intent enough. For example, if you sell sterling silver earrings, you want spend going to "sterling silver earrings," not "womens jewelry." "Womens jewelry" isn't irrelevant, but it's too generic to be worth the spend while you're struggling to hit your ROAS target. Look for broader terms like this in your search term report and consider excluding or limiting them until results improve.</p>` : ''}
+        ${goalHasRoasIssue ? `<p><strong>Review your search terms.</strong> Your search term report is one of the highest-leverage things to check when ROAS isn't where it should be. Even with a good feed, irrelevant search terms can sneak in and quietly eat spend. Review your search term report and exclude anything irrelevant — and keep checking it multiple times per week until everything showing up with the most impressions and clicks is highly relevant.</p>` : ''}
+        ${goalWantsScale && goalHasGoodResults ? `<p><strong>Consider activating more generic keywords.</strong> Since results are already good and the goal is to scale, the fix is often to get new keywords active — and that often means going slightly broader than what you currently target. In practice, this means adding more generic keywords into your product titles, so the algorithm connects those products to a wider range of searches on Google. Opening up to these less specific (but still relevant) search terms can unlock additional volume that your current high-intent keywords can't provide.</p>` : ''}
+        ${goalWantsScale && !goalHasRoasIssue && !goalHasGoodResults ? `<p><strong>Before scaling further, get clarity on your current results.</strong> To scale successfully, you first need profitable results — and it wasn't fully clear from what you described whether that's currently the case. If your results are a bit underwhelming right now, start by reviewing your search term report — you might be wasting budget on irrelevant or overly broad terms. If your results are already solid and you're simply struggling to scale, then consider activating more generic keywords — in practice, adding more generic keywords into your product titles so the algorithm connects those products to a wider range of searches on Google can unlock additional volume that your current high-intent keywords can't reach.</p>` : ''}
+      </div>` : ''}`;
+  }
+
+  else {
+    content = `
+      ${warning('Product count could not be confirmed. The recommendations below use conservative defaults. Confirm your product count to get a precise strategy.')}
+      <p>Based on your spend level, focus on getting profitable before adding complexity. Audit your feed, confirm your tracking is accurate, and scale what is already working before restructuring.</p>`;
+  }
+
+  return section('🎯', '1. Core Strategy', 'bg-blue-50', content);
+}
+
+// ========== ADS STRUCTURE ==========
+function buildAdsStructure(data, cat) {
+  let content = '';
+  const isFewProducts = data.productCount !== 'null' && parseFloat(data.productCount) < 20;
+  const feedSetup = (data.feedSetup + ' ' + data.adsOverview).toLowerCase();
+
+  // Feed recommendation
+  let feedRec = '';
+  if (isFewProducts) {
+    const alreadyOnSheets = feedSetup.includes('sheet');
+    feedRec = alreadyOnSheets ? `
+    ${h3('Feed Setup — Google Sheets ✓')}
+    ${success('You\'re already using a Google Sheets feed — this is the right setup for a catalog of your size. Keep it.')}
+    ${bullet([
+      'Use the Sheets feed to create multiple title variants per hero product — each row can be a different title targeting a different keyword angle.',
+      'No developer needed to iterate: just update the sheet, refresh the feed in Merchant Center, and the new titles are live.',
+      'This is the single highest-leverage feed infrastructure choice at your stage. Make the most of it.',
+    ])}` : `
+    ${h3('Feed Setup — Switch to Google Sheets')}
+    <p>For a catalog of your size, we <strong>strongly recommend moving to a Google Sheets feed uploaded directly to Merchant Center</strong> as your primary data source.</p>
+    ${bullet([
+      'A Sheets feed gives you full control to create multiple title variants per hero product.',
+      'The same product can target different keywords just by changing the title in a row — no developer needed.',
+      'This is the single highest-leverage feed infrastructure choice for a small catalog.',
+      'Do NOT use a native Shopify API sync — you lose control of titles and cannot create keyword variants easily.',
+    ])}`;
+  } else {
+    const usesShopifyNative = feedSetup.includes('shopify') && !feedSetup.includes('multifeed') && !feedSetup.includes('channable') && !feedSetup.includes('datafeed') && !feedSetup.includes('sheets');
+    const usesProFeedTool = feedSetup.includes('multifeed') || feedSetup.includes('channable') || feedSetup.includes('datafeedwatch') || feedSetup.includes('datafeed');
+    if (usesProFeedTool) {
+      feedRec = `
+      ${h3('Feed Setup — Solid Foundation ✓')}
+      ${success('You\'re already using a dedicated feed management tool — this is the right setup for a large catalog. Keep it.')}
+      <p>The most important thing now is to make full use of it. A feed tool is only as good as the rules you build inside it. Focus on:</p>
+      ${bullet([
+        '<strong>Title optimisation:</strong> Rewrite titles with high-intent keywords relevant to each product category — not just the product name.',
+        '<strong>Product types:</strong> Set accurate, granular product types. This helps Google understand your catalog.',
+        '<strong>Custom labels:</strong> Build labels for bestsellers, high-margin products, ROAS tiers, and top store sales — these will power future campaign segmentation.',
+      ])}`;
+    } else if (usesShopifyNative) {
+      feedRec = `
+      ${h3('Feed Setup — Switch Away from Native Shopify Sync')}
+      ${warning('You appear to be using the native Shopify Google & YouTube app. For a catalog of your size, this is a significant limitation — you lose control over title customisation, product type accuracy, and per-market feed variants.')}
+      ${bullet([
+        'Move to a dedicated feed management tool: <strong>Multifeed, Channable, or DataFeedWatch</strong> are all solid choices.',
+        'A proper feed tool lets you write custom title rules, set accurate product types, build custom labels, and create separate feeds per market.',
+        'Alternatively, a <strong>supplementary Google Sheet</strong> uploaded to Merchant Center can work well for smaller hero product groups if you want a lightweight starting point.',
+        'Build feed infrastructure that enables future segmentation: labels for margin tiers, bestsellers, ROAS buckets, and store sales rank.',
+      ])}`;
+    } else {
+      feedRec = `
+      ${h3('Feed Setup — Use a Dedicated Feed Tool')}
+      ${bullet([
+        'Use a dedicated feed management tool such as <strong>Multifeed, Channable, or DataFeedWatch</strong> to customise your feed.',
+        'A proper feed tool lets you create custom rules: keyword-enriched titles, accurate product types, custom labels by category or margin.',
+        'For hero products, a supplementary <strong>Google Sheets feed</strong> can complement your main feed — useful for testing specific title variants quickly.',
+        'Build feed infrastructure that enables future segmentation: labels for margin tiers, bestsellers, ROAS buckets, and store sales rank.',
+        '<strong>Avoid the native Shopify API sync</strong> — it severely limits your ability to customise titles, product types, and per-market feeds.',
+      ])}`;
+    }
+  }
+
+  if (cat === 'A') {
+    content = `
+      ${h3('Shopping Ads First, Search Second')}
+      <p>Shopping ads can be run through two different campaign types: <strong>Standard Shopping campaigns</strong> or <strong>Performance Max (PMax) campaigns</strong>. At your stage, PMax is the right choice — it handles Smart Bidding automatically and is easier to get right without a complex manual setup.</p>
+      ${bullet([
+        '<strong>Priority 1 — Shopping ads via PMax:</strong> Launch 1 PMax campaign focused exclusively on your hero/bestselling products. PMax gives you Smart Bidding automatically — ideal for this stage.',
+        'Use 5–10 BOFU-focused title variants for your hero products. Slightly different titles target different keyword angles (e.g. "black leather bifold wallet" vs "slim men\'s wallet no coin pouch").',
+        '<strong>Start on Smart Bidding immediately</strong> — Maximize Conversion Value or Target ROAS (if you have historical data).',
+        '<strong>Priority 2 — Non-Brand Search (launch after Shopping is profitable):</strong> Add 1 BOFU Search campaign targeting the highest-converting queries you see in Shopping search terms.',
+        'Use Exact and Phrase match in Search initially. Monitor search terms weekly.',
+      ])}
+      ${feedRec}`;
+  }
+
+  else if (cat === 'B') {
+    content = `
+      ${h3('Audit Before You Restructure')}
+      ${info('If you already run Search + Shopping + PMax, do not rebuild. Identify the next decision point based on BOFU saturation first.')}
+      ${h3('BOFU Phase (Still Scaling)')}
+      ${bullet([
+        'Keep scaling the campaigns that own BOFU. Do not split prematurely.',
+        'Improve title variants: find the top 3–5 converting BOFU queries and build more title angles around them.',
+        'Check that Shopping and Search are not cannibalising each other\'s BOFU traffic.',
+      ])}
+      ${h3('MOFU Phase (BOFU Saturated)')}
+      ${bullet([
+        'Create MOFU-focused title variants first (Shopping layer). These target people searching for the category or problem, not your specific product.',
+        'Add a MOFU-dedicated Search campaign with its own keyword set.',
+        'Validate that the new MOFU titles actually pull MOFU-intent queries — do not assume this automatically happens.',
+        'Scale MOFU only after validating query coverage.',
+      ])}
+      ${feedRec}`;
+  }
+
+  else if (cat === 'C') {
+    const usesPmaxAds = /pmax|performance max/.test((data.adsOverview).toLowerCase());
+    const usesStandardShoppingAds = /standard shopping|shopping campaign/.test((data.adsOverview).toLowerCase()) && !usesPmaxAds;
+    const marketTermsAds = (data.adsOverview.toLowerCase().match(/\b(us|usa|u\.s\.?|uk|eu|europe|emea|canada|australia|nz|new zealand|germany|france|spain|italy|netherlands|apac|worldwide)\b/g) || []);
+    const runsPerMarketCampaignsAds = new Set(marketTermsAds).size >= 2;
+    const campaignTypeLabelAds = usesPmaxAds ? 'PMax' : (usesStandardShoppingAds ? 'Standard Shopping' : 'PMax or Standard Shopping');
+    const structureBullets = [];
+    if (runsPerMarketCampaignsAds) {
+      structureBullets.push(`<strong>You're already running 1 ${campaignTypeLabelAds} campaign per market</strong> — that's a good setup, and you should be able to keep it this way.`);
+      structureBullets.push(`Focus on feed quality and reviewing search terms${usesPmaxAds ? ', and confirm PMax is actually spending on Shopping placements rather than other channels' : ''} — not on restructuring.`);
+    } else {
+      structureBullets.push('<strong>1 main PMax or Standard Shopping campaign per market.</strong> This is the correct setup at this stage.');
+      structureBullets.push('Goal: broad product-level data collection and efficient scaling — not premature segmentation.');
+    }
+    if (usesStandardShoppingAds) {
+      structureBullets.push('You\'re currently running Standard Shopping — there\'s no need to force a switch to PMax. The campaign type matters less than feed quality at this stage.');
+    }
+    content = `
+      ${h3('Keep Structure Simple')}
+      ${bullet(structureBullets)}
+      ${h3('Search (Optional at This Stage)')}
+      ${bullet([
+        'Non-brand Search is not required now.',
+        'Add Search only when the main Shopping campaign is stable and profitable.',
+        'If added: focus on clear, high-intent category keywords. Keep it simple and use it as support, not the main engine.',
+      ])}
+      ${h3('When to Segment (Next Phase Trigger)')}
+      ${bullet([
+        'When monthly spend naturally grows past $10,000, OR',
+        'When the simple campaign structure hits a performance ceiling and stops scaling,',
+        'Start splitting products into intentional groups using custom labels (margins, bestsellers, ROAS buckets, store sales rank).',
+      ])}
+      ${feedRec}`;
+  }
+
+  else if (cat === 'D') {
+    content = `
+      ${h3('Segmentation Strategy')}
+      <p>If your spend has stalled for 4+ weeks and fundamentals are solid, restructuring around product performance buckets is the next lever.</p>
+      ${bullet([
+        'Build <strong>Custom Labels</strong> to segment products: Top ROAS, High Margin, Best Store Sales, New/Unproven.',
+        'Create separate campaigns or ad groups per bucket so you can set differentiated bidding strategies.',
+        'Push budget aggressively to proven winners. Set conservative budgets or pause underperformers.',
+        'Regularly re-label products as performance data evolves — this is ongoing work, not a one-time setup.',
+      ])}
+      ${h3('Search — Scale Intelligently')}
+      ${bullet([
+        data.spendValue >= 50000
+          ? '<strong>At your spend level ($50k+):</strong> Expand to Broad Match on core BOFU terms. Always pair Broad Match with Smart Bidding (Max Conversions or Max Conversion Value). Monitor search terms closely.'
+          : '<strong>At your spend level ($10k–$50k):</strong> Scale Search, but do not force Broad Match yet. Expand in stages — prove BOFU coverage and data quality first, then cautiously test Broad Match.',
+        'Start Search with a narrow keyword set (Exact + Phrase match) on your most proven categories.',
+        'Use Smart Bidding in Search — do not use manual CPC for non-brand Search at this scale.',
+      ])}
+      ${feedRec}`;
+  }
+
+  else {
+    content = `
+      ${warning('Category is provisional — product count not confirmed. Recommendations below apply conservatively.')}
+      ${bullet([
+        'Start with a single Shopping or PMax campaign rather than splitting.',
+        'Prioritise feed quality over campaign complexity.',
+        'Confirm product count to receive a precise campaign structure recommendation.',
+      ])}
+      ${feedRec}`;
+  }
+
+  return section('🏗️', '2. Recommended Google Ads Structure', 'bg-purple-50', content);
+}
+
+// ========== BRAND TERMS ==========
+function buildBrandTerms(data) {
+  const uniqueness = data.uniqueness;
+  const hasBrand = data.hasBrandSearch;
+  let content = '';
+
+  // Brand Search setup
+  const brandSearchRec = hasBrand === 'yes'
+    ? success('You already run Brand Search — keep it running. Ensure it\'s using <strong>Manual CPC</strong> or <strong>Target Impression Share</strong>.')
+    : hasBrand === 'no'
+      ? warning('You do not currently run a Brand Search campaign. <strong>Launch one now.</strong> Even small brands lose branded traffic to competitors — this is cheap protection.')
+      : warning('Brand Search campaign status is unclear. Confirm whether one is running, and if not, launch it immediately.');
+
+  content += `
+    ${h3('Brand Search Campaign')}
+    ${brandSearchRec}
+    ${bullet([
+      'Use <strong>Manual CPC</strong> or <strong>Target Impression Share (top of results)</strong> — do not use smart bidding on brand campaigns.',
+      'Set target Impression Share to 90%+ for brand keywords to dominate your own name.',
+      '<strong>Check search terms regularly</strong> to ensure non-brand queries are not leaking into this campaign. Add negatives as needed.',
+      'Keep bids low — brand clicks are cheap. The goal is protection, not volume.',
+    ])}`;
+
+  if (uniqueness === 'highly_unique') {
+    content += `
+      ${h3('Brand Shopping')}
+      <p>Because your products are highly unique, the risk of a competitor stealing demand via Shopping is lower. If a customer sees a competitor\'s Shopping ad while searching your brand name, there may not be a comparable alternative for them to buy.</p>
+      ${bullet([
+        'Brand Search is your primary brand protection tool.',
+        'Brand Shopping is <strong>optional</strong> — assess whether competitors appear in Shopping when someone searches your brand name.',
+        'If yes: consider launching a Branded Shopping campaign. If no: Brand Search alone may be sufficient.',
+      ])}`;
+  }
+
+  else if (uniqueness === 'generic') {
+    content += `
+      ${h3('Brand Shopping — Set This Up')}
+      ${warning('Because your products are in a competitive, generic category, competitors can easily show Shopping ads when someone searches your brand. This directly steals purchase-ready demand. A Branded Shopping campaign prevents this.')}
+      ${bullet([
+        '<strong>Launch a Branded Shopping campaign</strong> targeting your brand name as a keyword-based signal or through campaign priority settings.',
+        'Use <strong>Manual CPC or Max Clicks</strong> bidding initially — this gives you control while the campaign builds data.',
+        'Add a script or use negative keywords to exclude non-brand search terms from this campaign — you only want it firing on brand queries.',
+        'Once the campaign has <strong>30+ conversions</strong>: switch to <strong>Target ROAS</strong> bidding.',
+        'This campaign directly protects the demand you\'ve already built through brand awareness and organic traffic.',
+      ])}`;
+  }
+
+  else {
+    content += `
+      ${h3('Brand Shopping — Clarification Needed')}
+      ${warning('Product uniqueness is unknown — this is a decision blocker for Brand Shopping setup.')}
+      <p>Here\'s how to determine which path applies to you:</p>
+      ${bullet([
+        'Search for your brand name on Google. Do competitors\' Shopping ads appear?',
+        '<strong>If yes:</strong> Treat as Generic/Competitive. Launch a Branded Shopping campaign to protect demand — use Manual CPC + non-brand negatives, move to tROAS after 30 conversions.',
+        '<strong>If no:</strong> Treat as Highly Unique. Brand Search alone is likely sufficient. Monitor occasionally.',
+      ])}`;
+  }
+
+  return section('🏷️', '3. Managing Brand Terms', 'bg-green-50', content);
+}
+
+// ========== 30-DAY RAMP UP ==========
+function buildRampUpPlan(data, cat) {
+  let weeks = [];
+  const rampMarketTerms = (data.adsOverview.toLowerCase().match(/\b(us|usa|u\.s\.?|uk|eu|europe|emea|canada|australia|nz|new zealand|germany|france|spain|italy|netherlands|apac|worldwide)\b/g) || []);
+  const rampRunsPerMarketCampaigns = new Set(rampMarketTerms).size >= 2;
+
+  if (cat === 'A') {
+    weeks = [
+      weekBlock(1, 'Feed & Foundation', [
+        'Set up a Google Sheets feed with your hero products (5–10 products max).',
+        'Create 5–10 BOFU-focused title variants per hero product targeting different keyword angles.',
+        'Upload the Sheets feed to Google Merchant Center and resolve any disapprovals.',
+        'Confirm Google Ads conversion tracking is working correctly (test a purchase if possible).',
+        data.hasBrandSearch === 'no' ? 'Launch Brand Search campaign (Manual CPC, brand keywords only).' : 'Review Brand Search — confirm Manual CPC and check for non-brand query leakage.',
+      ]),
+      weekBlock(2, 'Launch Shopping Ads via PMax', [
+        'Launch 1 PMax campaign containing only your hero products.',
+        'Set bidding to Maximize Conversion Value (or Target ROAS if you have historical data).',
+        'Set a daily budget and give the campaign time to learn — do not touch it daily.',
+        'Confirm the campaign is importing the correct Sheets feed products.',
+      ]),
+      weekBlock(3, 'Monitor & Adjust', [
+        'Check Shopping search terms report — which queries triggered impressions and clicks?',
+        'Identify any obvious irrelevant queries and add as negatives at the campaign or account level.',
+        'Adjust title variants if certain angles are not pulling relevant queries.',
+        'Review ROAS: is it trending toward your target? Note the direction.',
+        'Do not change campaign structure yet — let data accumulate.',
+      ]),
+      weekBlock(4, 'Evaluate & Plan Search', [
+        'Review 3-week Shopping performance: ROAS trend, top queries, conversion volume.',
+        'If ROAS is acceptable/profitable: draft BOFU keyword list for a Search campaign based on top Shopping queries.',
+        'If ROAS is not yet there: identify the bottleneck (feed titles? bids? product pages?) and fix it before adding Search.',
+        'Prepare a BOFU Search campaign (Exact + Phrase match) ready to launch in Week 5 if Shopping is stable.',
+      ]),
+    ];
+  }
+
+  else if (cat === 'B') {
+    weeks = [
+      weekBlock(1, 'BOFU Saturation Audit', [
+        'Pull impression share data for your top BOFU keywords (Search + Shopping).',
+        'Run live test searches on your 10 most important BOFU terms in your target markets.',
+        'Check: are you always appearing? Always in top position? Or inconsistently?',
+        'Review Search term reports for the last 30 days — are you capturing the queries you expect?',
+        'Document findings: which BOFU terms are dominated vs. which have room to grow.',
+      ]),
+      weekBlock(2, 'Act on Audit Findings', [
+        'If BOFU has room: improve title variants and keyword coverage. Add angles you\'re missing.',
+        'If BOFU is saturated: identify top MOFU keyword opportunities (category/problem-level terms).',
+        'Create MOFU title variants in your feed (Sheets or feed tool) targeting category-intent queries.',
+        'If MOFU: draft a dedicated MOFU Search campaign structure.',
+        data.hasBrandSearch === 'no' ? 'Launch Brand Search campaign if not already running.' : 'Audit Brand Search for non-brand query leakage. Clean negatives.',
+      ]),
+      weekBlock(3, 'Implement & Validate', [
+        'Launch any new campaigns or title variants created in Week 2.',
+        'Wait for the new assets to accumulate impressions — do not judge too early.',
+        'Validate MOFU titles: check search terms to confirm they pull MOFU-intent queries (not BOFU or TOFU).',
+        'If MOFU titles pull the wrong intent: adjust the wording and re-validate.',
+        'Monitor ROAS impact of any changes made.',
+      ]),
+      weekBlock(4, 'Scale & Plan Next Layer', [
+        'Review Week 3 performance: is the new MOFU layer pulling the right queries?',
+        'If yes: begin scaling — increase budgets carefully (no more than 20-30% per week).',
+        'Document which MOFU queries convert and which don\'t — this informs future MOFU keyword expansion.',
+        'Plan: when MOFU is proven, TOFU is the next expansion. But only plan it — do not launch yet.',
+      ]),
+    ];
+  }
+
+  else if (cat === 'C') {
+    weeks = [
+      weekBlock(1, 'Feed Quality Audit', [
+        'Review your entire feed for title quality — are product names generic or keyword-rich?',
+        'Identify the top 20–50 products by store revenue and focus feed improvements on these first.',
+        'Check product types — are they accurate and granular?',
+        'Review images on top products: high-res, clean background, on-brand?',
+        data.hasBrandSearch === 'no' ? 'Launch Brand Search campaign (Manual CPC).' : 'Audit Brand Search — check for non-brand leakage.',
+      ]),
+      weekBlock(2, 'Improve Feed', [
+        'Rewrite titles for your top revenue products: add relevant high-intent keywords from your niche.',
+        'Set or improve product types so they are accurate and granular.',
+        'Add custom labels: mark bestsellers, top-margin products, and high store-sales products.',
+        'Upload improved feed to Merchant Center and confirm products are approved.',
+        'Consider switching to a dedicated feed tool (Multifeed/Channable) if using native Shopify sync.',
+      ]),
+      weekBlock(3, 'Campaign Health Check', [
+        'Review your main campaign(s): which product groups are spending? Which are not?',
+        'Check search terms: are the queries relevant to your products? Add negatives where needed.',
+        'ROAS trend: improving, flat, or declining? Identify the top 3 causes.',
+        rampRunsPerMarketCampaigns ? 'Confirm each of your market campaigns has the correct language and currency targeting for that market.' : 'Confirm your campaign has the correct language and currency targeting for your market.',
+        'Do not restructure campaigns yet — data quality from the improved feed needs time to show.',
+      ]),
+      weekBlock(4, 'Review & Scale', [
+        'Compare ROAS from before and after feed improvements. Quantify the impact.',
+        'Identify which products or categories perform best — these will drive your future segmentation.',
+        'If profitable and scaling: continue. The simple structure is working.',
+        'If hitting a ceiling: begin planning product segmentation by performance bucket for next phase.',
+        'Plan: when spend reaches $10k/mo, revisit campaign structure to split by custom labels.',
+      ]),
+    ];
+  }
+
+  else if (cat === 'D') {
+    const isVeryHighSpend = data.spendValue >= 50000;
+    weeks = [
+      weekBlock(1, 'Full Account Audit', [
+        'Audit feed quality: title keyword relevance, product type accuracy, custom label coverage.',
+        'Audit tracking: are purchases firing correctly? Is conversion value passing accurately? Check GA4 + Google Ads tag.',
+        'Check how long spend has been stalled at the current level (if applicable).',
+        'Review campaign structure: are products segmented? What custom labels exist (if any)?',
+        'Audit Search: how much of total spend goes to Search? Which campaigns and match types?',
+      ]),
+      weekBlock(2, 'Build Custom Label Framework', [
+        'Design your custom label strategy: ROAS tier (High/Mid/Low), Margin tier, Store Sales rank.',
+        'Assign custom labels in your feed tool based on 90-day performance data.',
+        'Identify your top-performing 20% of products — these should get dedicated budget.',
+        'Identify underperformers — plan to reduce spend or pause these products.',
+        data.hasBrandSearch === 'no' ? 'Launch Brand Search if not running.' : 'Audit Brand Search and Branded Shopping setup.',
+      ]),
+      weekBlock(3, 'Restructure Campaigns', [
+        'Create new campaign segments based on custom labels (e.g. "Top ROAS Products" campaign, "High Margin" campaign).',
+        'Set differentiated bidding strategies per segment: higher tROAS for top performers, lower budgets for unproven products.',
+        'Update feed with corrected labels and confirm Merchant Center import.',
+        isVeryHighSpend ? 'If Search is active: test Broad Match on core BOFU terms with Smart Bidding. Monitor closely.' : 'Expand Search carefully: add Phrase match keywords on proven categories. Not Broad Match yet.',
+      ]),
+      weekBlock(4, 'Scale Winners & Monitor', [
+        'Review campaign performance after restructure. Is spend flowing to the right buckets?',
+        'Increase budgets on top-ROAS campaigns: no more than 20–30% per week to avoid disrupting smart bidding.',
+        'Continue feeding performance data back into custom labels — re-assign products as needed.',
+        'Review Search term quality: add negatives to prevent irrelevant queries consuming budget.',
+        'Set a 4-week review calendar: feed quality, label updates, budget reallocation — this is now an ongoing cadence.',
+      ]),
+    ];
+  }
+
+  else {
+    weeks = [
+      weekBlock(1, 'Confirm Inputs', [
+        'Confirm your exact product count — this determines the entire strategy.',
+        'Audit your current feed for title quality and product type accuracy.',
+        'Verify that conversion tracking is working correctly.',
+      ]),
+      weekBlock(2, 'Set Up Foundation', [
+        'Based on confirmed product count: set up correct feed infrastructure (Sheets for <20 products, feed tool for 20+ products).',
+        'Launch or audit Brand Search campaign.',
+        'Ensure your main Shopping campaign covers your key products.',
+      ]),
+      weekBlock(3, 'Optimise', [
+        'Review search terms and add negatives where needed.',
+        'Improve titles on top products based on query data.',
+        'Check ROAS trend and adjust bidding if needed.',
+      ]),
+      weekBlock(4, 'Plan Next Phase', [
+        'Based on 3 weeks of data, determine if scaling or restructuring is needed.',
+        'Return to this tool with confirmed product count for a more precise audit.',
+      ]),
+    ];
+  }
+
+  const content = `
+    <p class="text-gray-600">A week-by-week action plan to get your account properly structured and scaling.</p>
+    <div class="space-y-4 mt-4">${weeks.join('')}</div>`;
+
+  return section('📅', '4. 30-Day Ramp-Up Plan', 'bg-orange-50', content);
+}
+
+// ========== CLOSING ==========
+function buildClosingSection(data, cat) {
+  let content = `<p class="text-gray-600">Hope you enjoyed your audit and that all the advice feels actionable and clear. If you have any questions on anything, feel free to reach out to me at <a href="mailto:victor.tomas@ciasomedia.com" class="text-blue-600 hover:underline">victor.tomas@ciasomedia.com</a>. If you want our team to take a deeper look into your account and perform a actual account audit, feel free to reach out to us here: <a href="https://ciasomedia.com/" target="_blank" class="text-blue-600 hover:underline">https://ciasomedia.com/</a></p>`;
+
+  if ((cat === 'B' || cat === 'D') && data.spendValue > 50000) {
+    content += `<p class="text-gray-600 mt-4">Given the size of your account we would highly suggest getting an actual audit done, especially if you are unsure how to proceed and take the next step in your account. With this level of spend, there are many areas which might be missed in our AI audit, areas which require more context from you to the audit that would change the outcome of the suggestions.</p>`;
+  }
+
+  return section('🙌', 'Final Thoughts', 'bg-gray-50', content);
+}
+
+// ========== INIT ==========
+updateProgress(1);
+document.getElementById('step-label').textContent = 'Step 1 of 5: Basics';
+</script>
+</body>
+</html>
