@@ -54,8 +54,29 @@
 <!-- Main Content -->
 <main class="max-w-3xl mx-auto px-6 py-10">
 
+  <!-- ===== STEP 0: Intro ===== -->
+  <div class="step-panel active fade-in" id="step-0">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">AI-Driven Google Ads Audit — for Ecommerce Brands</h1>
+      <div class="text-gray-600 mt-4 space-y-4 text-sm leading-relaxed">
+        <p>Fill in the information on the following pages. Please be as detailed as possible with everything, as that will generate better and more contextualized answers from the AI.</p>
+        <p>Describe your business in as much detail as possible, including how many products you have, how many sizes those products have, how many are bestsellers, and more.</p>
+        <p>Describe every active campaign in your Google Ads account as much as possible — which exact campaigns you currently have active.</p>
+        <p>Also, please describe in detail how your current results are (good or bad) and what you'd like to achieve with your Google Ads (scale more, improve ROAS, or both).</p>
+        <p>All of this will enable the AI to give you the best possible answers.</p>
+        <p>If you have any questions about this, feel free to reach out to me at <a href="mailto:victor.tomas@ciasomedia.com" class="text-blue-600 hover:underline">victor.tomas@ciasomedia.com</a>.</p>
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-end">
+      <button onclick="nextStep(0)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+        Get Started →
+      </button>
+    </div>
+  </div>
+
   <!-- ===== STEP 1: Basics ===== -->
-  <div class="step-panel active fade-in" id="step-1">
+  <div class="step-panel fade-in" id="step-1">
     <div class="mb-8">
       <p class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">Step 1 of 5</p>
       <h1 class="text-3xl font-bold text-gray-900">The Basics</h1>
@@ -436,6 +457,9 @@ function showStep(n, isResults) {
   if (isResults) {
     progressWrap.style.display = 'none';
     document.getElementById('progress-fill').style.width = '100%';
+    document.getElementById('step-label').textContent = '';
+  } else if (n === 0) {
+    progressWrap.style.display = 'none';
     document.getElementById('step-label').textContent = '';
   } else {
     progressWrap.style.display = 'block';
@@ -1238,8 +1262,8 @@ function buildClosingSection(data, cat) {
 }
 
 // ========== INIT ==========
-updateProgress(1);
-document.getElementById('step-label').textContent = 'Step 1 of 5: Basics';
+currentStep = 0;
+document.getElementById('progress-bar-wrap').style.display = 'none';
 </script>
 </body>
 </html>
