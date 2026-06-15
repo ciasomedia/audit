@@ -385,6 +385,21 @@
 let currentStep = 1;
 const totalSteps = 5;
 
+// ========== CONFIG ==========
+// Google Apps Script Web App URL — receives a POST for every submission and
+// appends the data as a row in a Google Sheet.
+const SHEET_SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbyheb2JYNj-v2OQ1Z5PQdYGHyohZIJYoiXCSkQm9jmOnbXUDcyRgoKUqXB4a-v9-J67VA/exec';
+
+function submitToSheet(data) {
+  if (!SHEET_SUBMIT_URL || SHEET_SUBMIT_URL.indexOf('PASTE_') === 0) return;
+  fetch(SHEET_SUBMIT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ ...data, submittedAt: new Date().toISOString() }),
+  }).catch(() => {});
+}
+
 function getField(id) {
   const el = document.getElementById(id);
   return el ? el.value.trim() : '';
@@ -505,6 +520,8 @@ function generateReport() {
 
   const category = getCategory(data.spendValue, data.productCount);
   data.category = category;
+
+  submitToSheet(data);
 
   // Populate overview card
   const catInfo = getCategoryInfo(category);
