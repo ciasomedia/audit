@@ -409,7 +409,7 @@ const totalSteps = 5;
 // ========== CONFIG ==========
 // Google Apps Script Web App URL — receives a POST for every submission and
 // appends the data as a row in a Google Sheet.
-const SHEET_SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbyheb2JYNj-v2OQ1Z5PQdYGHyohZIJYoiXCSkQm9jmOnbXUDcyRgoKUqXB4a-v9-J67VA/exec';
+const SHEET_SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbw3By2EFQQ8a6CJuwT7rvsyc7UrwXgqaOCTBeppsCQqKIHJ2Vh5Yas8rzP84lY-6aDVkg/exec';
 
 function submitToSheet(data) {
   if (!SHEET_SUBMIT_URL || SHEET_SUBMIT_URL.indexOf('PASTE_') === 0) return;
