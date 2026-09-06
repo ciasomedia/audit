@@ -545,8 +545,6 @@ function generateReport() {
   const category = getCategory(data.spendValue, data.productCount);
   data.category = category;
 
-  submitToSheet(data);
-
   // Populate overview card
   const catInfo = getCategoryInfo(category);
   document.getElementById('report-category-title').textContent = catInfo.title;
@@ -556,15 +554,29 @@ function generateReport() {
   document.getElementById('report-url').textContent = data.url;
 
   // Build report sections
-  const sections = [
-    buildCoreStrategy(data, category),
-    buildAdsStructure(data, category),
-    buildBrandTerms(data),
-    buildRampUpPlan(data, category),
-    buildClosingSection(data, category),
-  ];
+  const coreStrategyHtml   = buildCoreStrategy(data, category);
+  const adsStructureHtml   = buildAdsStructure(data, category);
+  const brandTermsHtml     = buildBrandTerms(data);
+  const rampUpPlanHtml     = buildRampUpPlan(data, category);
 
-  document.getElementById('report-body').innerHTML = sections.join('');
+  document.getElementById('report-body').innerHTML = [
+    coreStrategyHtml, adsStructureHtml, brandTermsHtml, rampUpPlanHtml,
+    buildClosingSection(data, category),
+  ].join('');
+
+  // Submit to sheet including plain-text report output
+  function stripHtml(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+  }
+  submitToSheet({
+    ...data,
+    coreStrategy: stripHtml(coreStrategyHtml),
+    adsStructure: stripHtml(adsStructureHtml),
+    brandTerms:   stripHtml(brandTermsHtml),
+    rampUpPlan:   stripHtml(rampUpPlanHtml),
+  });
 
   showStep(null, true);
 }
